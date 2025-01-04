@@ -1,111 +1,121 @@
-local ScreenGui = Instance.new("ScreenGui")
-local ToggleButton = Instance.new("TextButton")
-local Title = Instance.new("TextLabel")
+local function createGUI()
+    local ScreenGui = Instance.new("ScreenGui")
+    local ToggleButton = Instance.new("TextButton")
+    local Title = Instance.new("TextLabel")
 
--- Parent the GUI to the Player's GUI
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    -- Parent the GUI to the Player's GUI
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Set up the toggle button
-ToggleButton.Parent = ScreenGui
-ToggleButton.Size = UDim2.new(0, 150, 0, 50)
-ToggleButton.Position = UDim2.new(0.9, -150, 0, 10)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.Text = "OFF"
-ToggleButton.TextScaled = true
-ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    -- Set up the toggle button
+    ToggleButton.Parent = ScreenGui
+    ToggleButton.Size = UDim2.new(0, 150, 0, 50)
+    ToggleButton.Position = UDim2.new(0.9, -150, 0, 10)
+    ToggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleButton.Text = "OFF"
+    ToggleButton.TextScaled = true
+    ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 
--- Set up the title
-Title.Parent = ScreenGui
-Title.Size = UDim2.new(0, 150, 0, 20)
-Title.Position = UDim2.new(0.9, -150, 0, -15)
-Title.BackgroundTransparency = 1
-Title.Text = "Sai.lol camlock"
-Title.TextScaled = true
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    -- Set up the title
+    Title.Parent = ScreenGui
+    Title.Size = UDim2.new(0, 150, 0, 20)
+    Title.Position = UDim2.new(0.9, -150, 0, -15)
+    Title.BackgroundTransparency = 1
+    Title.Text = "Sai.lol camlock"
+    Title.TextScaled = true
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 
--- Rainbow effect for the button
-spawn(function()
-    while true do
-        for i = 0, 1, 0.01 do
-            local color = Color3.fromHSV(i, 1, 1)
-            ToggleButton.BackgroundColor3 = color
-            wait(0.05)
-        end
-    end
-end)
-
--- Dragging functionality for the toggle button
-local UIS = game:GetService("UserInputService")
-local dragToggle, dragStart, startPos
-
-local function updateDrag(input)
-    local delta = input.Position - dragStart
-    ToggleButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-end
-
-ToggleButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragToggle = true
-        dragStart = input.Position
-        startPos = ToggleButton.Position
-    end
-end)
-
-ToggleButton.InputChanged:Connect(function(input)
-    if dragToggle and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-        updateDrag(input)
-    end
-end)
-
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragToggle = false
-    end
-end)
-
--- Lock-on functionality for the camera
-local cam = workspace.CurrentCamera
-local locked = false
-local lockedPlayer
-
--- Function to get the closest player
-local function getClosestPlayer()
-    local closestPlayer, shortestDistance = nil, math.huge
-    for _, player in pairs(game.Players:GetPlayers()) do
-        if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-            local distance = (player.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-            if distance < shortestDistance then
-                closestPlayer, shortestDistance = player, distance
+    -- Rainbow effect for the button
+    spawn(function()
+        while true do
+            for i = 0, 1, 0.01 do
+                local color = Color3.fromHSV(i, 1, 1)
+                ToggleButton.BackgroundColor3 = color
+                wait(0.05)
             end
         end
-    end
-    return closestPlayer
-end
+    end)
 
--- Event to lock/unlock the camera
-ToggleButton.MouseButton1Click:Connect(function()
-    locked = not locked
-    if locked then
-        lockedPlayer = getClosestPlayer()
-        if lockedPlayer and lockedPlayer.Character and lockedPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            ToggleButton.Text = "SAI ON"
-            spawn(function()
-                while locked and lockedPlayer and lockedPlayer.Character and lockedPlayer.Character:FindFirstChild("HumanoidRootPart") do
-                    local targetPos = lockedPlayer.Character.HumanoidRootPart.Position + (lockedPlayer.Character.HumanoidRootPart.Velocity * 0.149)  -- Changed prediction to 0.149
-                    cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), 0.12)  -- Changed smoothness to 0.12
-                    wait(0.03)
+    -- Dragging functionality for the toggle button
+    local UIS = game:GetService("UserInputService")
+    local dragToggle, dragStart, startPos
+
+    local function updateDrag(input)
+        local delta = input.Position - dragStart
+        ToggleButton.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+
+    ToggleButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = true
+            dragStart = input.Position
+            startPos = ToggleButton.Position
+        end
+    end)
+
+    ToggleButton.InputChanged:Connect(function(input)
+        if dragToggle and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
+            updateDrag(input)
+        end
+    end)
+
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragToggle = false
+        end
+    end)
+
+    -- Lock-on functionality for the camera
+    local cam = workspace.CurrentCamera
+    local locked = false
+    local lockedPlayer
+
+    -- Function to get the closest player
+    local function getClosestPlayer()
+        local closestPlayer, shortestDistance = nil, math.huge
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player ~= game.Players.LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local distance = (player.Character.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+                if distance < shortestDistance then
+                    closestPlayer, shortestDistance = player, distance
                 end
-            end)
+            end
+        end
+        return closestPlayer
+    end
+
+    -- Event to lock/unlock the camera
+    ToggleButton.MouseButton1Click:Connect(function()
+        locked = not locked
+        if locked then
+            lockedPlayer = getClosestPlayer()
+            if lockedPlayer and lockedPlayer.Character and lockedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                ToggleButton.Text = "SAI ON"
+                spawn(function()
+                    while locked and lockedPlayer and lockedPlayer.Character and lockedPlayer.Character:FindFirstChild("HumanoidRootPart") do
+                        local targetPos = lockedPlayer.Character.HumanoidRootPart.Position + (lockedPlayer.Character.HumanoidRootPart.Velocity * 0.149)  -- Changed prediction to 0.149
+                        cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), 0.12)  -- Changed smoothness to 0.12
+                        wait(0.03)
+                    end
+                end)
+            else
+                locked = false
+                ToggleButton.Text = "SAI OFF"
+            end
         else
-            locked = false
             ToggleButton.Text = "SAI OFF"
         end
-    else
-        ToggleButton.Text = "SAI OFF"
-    end
+    end)
+end
+
+-- Recreate the GUI if the character resets
+game.Players.LocalPlayer.CharacterAdded:Connect(function()
+    createGUI()
 end)
+
+-- Initial GUI creation
+createGUI()
