@@ -97,8 +97,8 @@ local function createGUI()
                 ToggleButton.Text = "SAI ON"
                 spawn(function()
                     while locked and lockedPlayer and lockedPlayer.Character and lockedPlayer.Character:FindFirstChild("HumanoidRootPart") do
-                        local targetPos = lockedPlayer.Character.HumanoidRootPart.Position + (lockedPlayer.Character.HumanoidRootPart.Velocity * 0.149)  -- Changed prediction to 0.149
-                        cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, targetPos), 0.12)  -- Changed smoothness to 0.12
+                        local targetPos = lockedPlayer.Character.HumanoidRootPart.Position + (lockedPlayer.Character.HumanoidRootPart.Velocity * 0.149) -- Prediction value
+                        cam.CFrame = CFrame.new(cam.CFrame.Position, targetPos) -- No smoothness for faster lock-on
                         wait(0.03)
                     end
                 end)
